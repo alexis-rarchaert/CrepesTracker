@@ -1,4 +1,4 @@
-//1.0.0-4
+//1.0.0-5
 const express = require('express');
 const path = require('path');
 const cors = require('cors')
@@ -25,7 +25,7 @@ webpush.setVapidDetails(
 
 const NOTION_CLIENT_ID = '191d872b-594c-80dd-b394-00372fd1641d';
 const NOTION_CLIENT_SECRET = 'secret_vQH4tiSLJnAnhLDAOz3UckMekqqwUyKzequbAQiBKJD';
-const REDIRECT_URI = 'https://preview.notabl.fr/auth/notion/callback';
+const REDIRECT_URI = 'https://preview.notabl.fr:8080/auth/notion/callback';
 
 // Configuration de la base de données
 const pool = mysql.createPool({
