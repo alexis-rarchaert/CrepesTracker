@@ -18,20 +18,9 @@ const requestNotificationPermission = async () => {
     return permission
 }
 const main = async () => {
-    console.log('Checking requirements...');
     check();
-    console.log('Registering service worker...');
-
-    // Forcer la mise à jour du service worker
-    const registration = await navigator.serviceWorker.getRegistration();
-    if (registration) {
-        await registration.unregister();
-    }
-
     const swRegistration = await registerServiceWorker();
-    console.log('Service worker registered:', swRegistration);
-    console.log('Requesting notification permission...');
-    const permission = await requestNotificationPermission();
-    console.log('Notification permission:', permission);
+    const permission =  await requestNotificationPermission();
+    showLocalNotification('This is title', 'this is the message', swRegistration);
 }
 main();

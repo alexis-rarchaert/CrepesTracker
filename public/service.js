@@ -22,7 +22,6 @@ const saveSubscription = async subscription => {
     return response.json()
 }
 
-// Garder l'activation avec VAPID
 self.addEventListener('activate', async () => {
     console.log('Service Worker activating..');
     try {
