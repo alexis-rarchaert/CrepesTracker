@@ -160,7 +160,7 @@
 
                         <span class="user-name">Pour ${commande.user_name}</span>
                     `;
-                    commandeDiv.onclick = () => changerEtatCommande(commande.id, commande.status);
+                    commandeDiv.onclick = () => changerEtatCommande(commande.id, commande.status, commande.user_id);
                     commandesDiv.appendChild(commandeDiv);
                 });
         } catch (error) {
@@ -168,7 +168,7 @@
         }
     }
 
-    async function changerEtatCommande(id, status) {
+    async function changerEtatCommande(id, status, user_id) {
         let newStatus;
         if (status === 'pending') {
             newStatus = 'preparing';
@@ -176,6 +176,13 @@
             newStatus = 'ready';
         } else if (status === 'ready') {
             newStatus = 'finished';
+        }
+
+        let bodyMessage;
+        if(newStatus === 'preparing') {
+            bodyMessage = `🥞 Votre crêpe ${status} est en préparation !`;
+        } else if(newStatus === 'ready') {
+            bodyMessage = `🥞 Votre crêpe ${status} vous attend !`;
         }
 
         try {
@@ -186,6 +193,21 @@
                 },
                 body: JSON.stringify({status: newStatus})
             });
+
+            try {
+                await fetch(`/send-notification/${user_id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(
+                        {
+                            title: '👨‍🍳 Crêpe Tracker\'',
+                            body: bodyMessage
+                        }
+                    )
+                });
+            }
             updateCommandes();
         } catch (error) {
             console.error('Erreur:', error);

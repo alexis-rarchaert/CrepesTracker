@@ -91,6 +91,9 @@ app.get('/send-notification/:userId', async (req, res) => {
             }
 
             res.json({ message: 'Message envoyé à tous les utilisateurs' });
+        } catch (error) {
+            console.error('Erreur:', error);
+            res.status(500).json({ error: 'Erreur lors de l\'envoi' });
         }
     }
     else
