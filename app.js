@@ -22,14 +22,14 @@ webpush.setVapidDetails(
 
 const NOTION_CLIENT_ID = '191d872b-594c-80dd-b394-00372fd1641d';
 const NOTION_CLIENT_SECRET = 'secret_vQH4tiSLJnAnhLDAOz3UckMekqqwUyKzequbAQiBKJD';
-const REDIRECT_URI = 'http://localhost:8083/auth/notion/callback';
+const REDIRECT_URI = 'http://preview.notabl.fr:8083/auth/notion/callback';
 
 // Configuration de la base de données
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'crepes_app'
+    host: '87.106.78.211',
+    user: 'crepesapp',
+    password: 'crepesapp@',
+    database: 'crepesapp'
 });
 
 app.use(express.json());
