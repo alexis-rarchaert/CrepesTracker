@@ -21,34 +21,37 @@ async function askPermission() {
 }
 
 async function registerServiceWorker() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+
     const registration = await navigator.serviceWorker.register('sw.js');
     let subscription = await registration.pushManager.getSubscription();
 
-    if(subscription) {
-        console.log(subscription);
-        return;
+    if(!subscription) {
+        subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: await getPublicKey(),
+        });
     }
 
-    subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: await getPublicKey(),
-    });
-
-    saveSubscription(subscription);
+    await saveSubscription(subscription, userId);
 }
 
 async function getPublicKey() {
     return "BI_-zsHnL4wu28le_1iEFTqz1Anf-wUAJRFSCvZ3gLrRy2SORJ8xBNdHHdGg6Q8BFaqA6DfSM8IceQF4Wtq71m0";
 }
 
-async function saveSubscription(subscription) {
+async function saveSubscription(subscription, userId) {
     await fetch('http://nuitaliut.preview.notabl.fr:8080/save-subscription', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
-        body: JSON.stringify(subscription),
+        body: JSON.stringify({
+            subscription: subscription,
+            userId: userId
+        }),
     })
 }
 
