@@ -73,18 +73,31 @@ const sendNotification = (subscription, dataToSend) => {
     webpush.sendNotification(subscription, JSON.stringify(dataToSend));
 };
 
-app.get('/send-notification', (req, res) => {
-    const subscription = dummyDb.subscription;
-    const notificationData = {
-        title: 'Notification Test',
-        message: 'Hello World'
-    };
-    sendNotification(subscription, JSON.stringify(notificationData));
-    res.json({ message: 'message sent' });
+app.get('/send-notification/:userId', async (req, res) => {
+    try {
+        const [users] = await pool.query(
+            'SELECT push_subscription FROM users WHERE id = ?',
+            [req.params.userId]
+        );
 
-    console.log("MESSAGE ENVOYE");
+        if (users.length === 0 || !users[0].push_subscription) {
+            return res.status(404).json({ error: 'Subscription non trouvée' });
+        }
+
+        const subscription = JSON.parse(users[0].push_subscription);
+        const notificationData = {
+            title: 'Notification Test',
+            message: 'Hello World'
+        };
+
+        await sendNotification(subscription, notificationData);
+        res.json({ message: 'Message envoyé' });
+        console.log("MESSAGE ENVOYÉ");
+    } catch (error) {
+        console.error('Erreur:', error);
+        res.status(500).json({ error: 'Erreur lors de l\'envoi' });
+    }
 });
-
 app.get('/auth/notion', (req, res) => {
     const notionAuthUrl = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${NOTION_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code`;
     res.redirect(notionAuthUrl);
