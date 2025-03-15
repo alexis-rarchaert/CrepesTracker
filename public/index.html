@@ -246,7 +246,7 @@
     </div>
 
     <div id="commande-form" class="hidden">
-        <button onclick="passerCommande()" class="commande-btn">Commander une crêpe</button>
+        <button onclick="passerCommande()" class="commande-btn" id="button">Commander une crêpe</button>
         <div id="temps-attente-prochain"></div>
     </div>
 
@@ -265,7 +265,7 @@
     </div>
 </div>
 
-<script src="index.js"></script>
+<script src="index.js" defer></script>
 <script>
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -284,8 +284,6 @@
             loadUserOrders();
             updateTempsAttente();
         }
-
-        main();
     };
 
     function closeModal() {

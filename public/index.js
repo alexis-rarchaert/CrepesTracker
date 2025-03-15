@@ -1,23 +1,30 @@
-const check = () => {
-    if (!('serviceWorker' in navigator)) {
-        throw new Error('No Service Worker support!')
+function main() {
+    const permission = document.getElementById('button');
+    if(
+        (!permission &&
+        !('Notification' in window) &&
+        !('serviceWorker' in navigator)) ||
+    (Notification.permission !== 'default')) {
+        return;
     }
-    if (!('PushManager' in window)) {
-        throw new Error('No Push API Support!')
+
+    permission.addEventListener('click', async () => {
+        await askPermission();
+    });
+}
+
+async function askPermission() {
+    const permission = await Notification.requestPermission();
+    if(permission == 'granted') {
+        registerServiceWorker();
     }
 }
-const registerServiceWorker = async () => {
-    const swRegistration = await navigator.serviceWorker.register('service.js')
-    return swRegistration
+
+async function registerServiceWorker() {
+    const registration = await navigator.serviceWorker.register('/sw.js');
+    const subscriptions = await registration.pushManager.getSubscription();
+
+    console.log(subscriptions);
 }
-const requestNotificationPermission = async () => {
-    const permission = await window.Notification.requestPermission()
-    if (permission !== 'granted') {
-        throw new Error('Permission not granted for Notification')
-    }
-}
-const main = async () => {
-    check()
-    const swRegistration = await registerServiceWorker()
-    const permission = await requestNotificationPermission()
-}
+
+main();

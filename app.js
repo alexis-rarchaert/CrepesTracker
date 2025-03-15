@@ -13,8 +13,8 @@ const webpush = require('web-push');
 
 const vapidKeys = {
     publicKey:
-        'BPKA_V-IMOyMx8YLS7zBeWdYrznd64Ee5Ll8J-lG4n6cnwYE751PVgwix8RpyGLo4j_1cKMkIrjaPWdGu1whJto',
-    privateKey: 'XLPYm2dXuZqtACQiCodin-uPkQPC7Iv8MidbrV16UwI',
+        'BI_-zsHnL4wu28le_1iEFTqz1Anf-wUAJRFSCvZ3gLrRy2SORJ8xBNdHHdGg6Q8BFaqA6DfSM8IceQF4Wtq71m0',
+    privateKey: 'R6gHZGGgAbGgpO0DavsGj43OY2s7h_mpy_Ep4hKGvcI',
 }
 
 webpush.setVapidDetails(
@@ -300,6 +300,10 @@ const httpsOptions = {
     cert: fs.readFileSync('certificate.crt')
 };
 
-https.createServer(httpsOptions, app).listen(port, () => {
-    console.log(`Secure server started on https://localhost:${port}`);
+// https.createServer(httpsOptions, app).listen(port, () => {
+//     console.log(`Secure server started on https://localhost:${port}`);
+// });
+
+app.listen(port, () => {
+    console.log(`Server started on http://localhost:${port}`);
 });
