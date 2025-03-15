@@ -73,7 +73,7 @@ const sendNotification = (subscription, dataToSend) => {
     webpush.sendNotification(subscription, JSON.stringify(dataToSend));
 };
 
-app.get('/send-notification/:userId', async (req, res) => {
+app.post('/send-notification/:userId', async (req, res) => {
     if(req.params.userId === 'all') {
         try {
             const [users] = await pool.query(
