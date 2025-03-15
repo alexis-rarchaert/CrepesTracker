@@ -6,7 +6,6 @@ const check = () => {
         throw new Error('No Push API Support!')
     }
 
-    await Notification.requestPermission();
 }
 const registerServiceWorker = async () => {
     return await navigator.serviceWorker.register('/service.js')
