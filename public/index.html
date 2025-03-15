@@ -350,7 +350,7 @@
             date.setSeconds(date.getSeconds() + secondes);
 
             document.getElementById('temps-attente-prochain').textContent = tempsAttenteProchain > 0
-                ? `${commandes.length} crêpe(s) en attente | Temps d'attente: ${minutes}m ${secondes}s | Prochaine prête à partir de ${date.toLocaleTimeString()}`
+                ? `${commandes.length} crêpe(s) en attente | Temps d'attente: ${minutes}m ${secondes}s | Prochaine prête à partir de ${date.getHours()} : ${date.getMinutes()}`
                 : 'Pas d\'attente !';
         } catch (error) {
             console.error('Erreur:', error);
