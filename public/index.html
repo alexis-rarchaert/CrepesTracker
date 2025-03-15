@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Commande de Crêpes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            color: #2d3748;
+        }
+
+        #login-form {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .notion-btn {
+            background-color: #000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+        }
+
+        .notion-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .notion-logo {
+            width: 24px;
+            height: 24px;
+        }
+
+        #commande-form {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .commande-btn {
+            background-color: #38a169;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .commande-btn:hover {
+            background-color: #2f855a;
+        }
+
+        #temps-attente-prochain {
+            margin-top: 1rem;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        #commandes {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex-direction: row;
+        }
+
+        .commande {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            width: max-content;
+        }
+
+        .commande:hover {
+            transform: translateY(-2px);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 4px 0;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .pending {
+            background-color: #edf2f7;
+            color: #4a5568;
+        }
+
+        .preparing {
+            background-color: #c6f6d5;
+            color: #2f855a;
+        }
+
+        .ready {
+            background-color: #feebc8;
+            color: #c05621;
+        }
+
+        .crepe-type {
+            font-size: 1.125rem;
+            color: #2d3748;
+            display: block;
+        }
+
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1.5rem;
+            color: #2d3748;
+            text-align: center;
+        }
+
+        .crepe-options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .crepe-option-btn {
+            background-color: white;
+            border: 2px solid #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .crepe-option-btn:hover {
+            border-color: #4a5568;
+            background-color: #f7fafc;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #666;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background-color: #f0f0f0;
+            color: #000;
+        }
+
+        @media screen and (max-width: 768px) {
+            #commandes {
+                flex-direction: column;
+            }
+
+            .commande {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="assets/notion.png" alt="Notion logo" class="notion-logo">
+        <h1>Commande de Crêpes</h1>
+    </div>
+    <div id="login-form">
+        <button onclick="loginWithNotion()" class="notion-btn">
+                Se connecter avec Notion
+        </button>
+    </div>
+
+    <div id="commande-form" class="hidden">
+        <button onclick="passerCommande()" class="commande-btn">Commander une crêpe</button>
+        <div id="temps-attente-prochain"></div>
+    </div>
+
+    <div id="commandes"></div>
+
+    <div id="crepeModal" class="modal">
+        <div class="modal-content">
+            <button onclick="closeModal()" class="close-btn">&times;</button>
+            <h2>Choisissez votre type de crêpe</h2>
+            <div class="crepe-options">
+                <button class="crepe-option-btn" onclick="commanderCrepe('nature')">Nature</button>
+                <button class="crepe-option-btn" onclick="commanderCrepe('sucre')">Sucre</button>
+                <button class="crepe-option-btn" onclick="commanderCrepe('nutella')">Nutella</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function closeModal() {
+        document.getElementById('crepeModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('crepeModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+
+
+    async function loginWithNotion() {
+        window.location.href = '/auth/notion';
+    }
+
+    function getStatusLabel(status) {
+        switch(status) {
+            case 'pending': return 'En attente';
+            case 'preparing': return 'En préparation';
+            case 'ready': return 'Prête';
+            default: return status;
+        }
+    }
+
+    async function loadUserOrders() {
+        if (!userId) return;
+
+        try {
+            const response = await fetch('/api/commandes');
+            const commandes = await response.json();
+            const commandesDiv = document.getElementById('commandes');
+            commandesDiv.innerHTML = '';
+
+            commandes
+                .filter(commande => commande.user_id == userId)
+                .forEach(commande => {
+                    const commandeDiv = document.createElement('div');
+                    commandeDiv.className = `commande ${commande.status}`;
+                    commandeDiv.innerHTML = `
+                        <span class="crepe-type">Crêpe ${commande.crepe_type}</span>
+                        <span class="status-indicator">${getStatusLabel(commande.status)}</span>
+                    `;
+                    commandesDiv.appendChild(commandeDiv);
+                });
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
+
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        const error = urlParams.get('error');
+
+        if (error === 'email_non_autorise') {
+            alert('Email non autorisé. Utilisez une adresse @etu.iut-tlse3.fr ou @iut-tlse3.fr');
+        } else if (error === 'auth_failed') {
+            alert('Erreur d\'authentification');
+        } else if (userId) {
+            // Connexion réussie
+            window.userId = userId;
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('commande-form').classList.remove('hidden');
+            loadUserOrders();
+            updateTempsAttente();
+        }
+    };
+
+    async function updateTempsAttente() {
+        try {
+            const response = await fetch('/api/commandes');
+            const commandes = await response.json();
+            // Calculer le temps d'attente pour la prochaine commande (Environ 89 secondes par crêpe)
+            const tempsAttenteProchain = commandes.length * 89 + 89; // 89 secondes par crêpe + 1 minute de préparation
+            const minutes = Math.floor(tempsAttenteProchain / 60);
+            const secondes = tempsAttenteProchain % 60;
+
+            document.getElementById('temps-attente-prochain').textContent = tempsAttenteProchain > 0
+                ? `Temps d'attente estimé pour la prochaine commande: ${minutes}m ${secondes}s`
+                : 'Pas d\'attente !';
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
+
+    async function passerCommande() {
+        if (!userId) {
+            alert('Veuillez vous connecter');
+            return;
+        }
+
+        try {
+            // Demander la permission de notification si pas déjà accordée
+            if (Notification.permission === "default") {
+                const permission = await Notification.requestPermission();
+                if (permission === "denied") {
+                    console.warn("Notifications refusées");
+                }
+            }
+
+            const countResponse = await fetch(`/api/commandes/count/${userId}`);
+            const { count } = await countResponse.json();
+
+            if (count >= 2) {
+                alert('Vous avez déjà commandé 2 crêpes !');
+                return;
+            }
+
+            document.getElementById('crepeModal').style.display = 'block';
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
+
+    async function commanderCrepe(type) {
+        try {
+            const response = await fetch('/api/commandes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId,
+                    crepeType: type
+                })
+            });
+            const data = await response.json();
+
+            const commandeDiv = document.createElement('div');
+            commandeDiv.className = 'commande';
+            commandeDiv.textContent = `Crêpe ${type} #${data.id}`;
+            document.getElementById('commandes').appendChild(commandeDiv);
+
+            document.getElementById('crepeModal').style.display = 'none';
+            await updateTempsAttente();
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
+
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        const error = urlParams.get('error');
+
+        if (error === 'email_non_autorise') {
+            alert('Email non autorisé. Utilisez une adresse @etu.iut-tlse3.fr ou @iut-tlse3.fr');
+        } else if (error === 'auth_failed') {
+            alert('Erreur d\'authentification');
+        } else if (userId) {
+            window.userId = userId;
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('commande-form').classList.remove('hidden');
+            loadUserOrders();
+            updateTempsAttente();
+        }
+    };
+
+    setInterval(updateTempsAttente, 1000);
+    setInterval(loadUserOrders, 1000);
+    updateTempsAttente();
+</script>
+<script src="/worker.js"></script>
+</body>
+</html>

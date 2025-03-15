@@ -1,0 +1,199 @@
+<html lang="fr">
+<head>
+    <title>Cuisine - Commandes de Crêpes</title>
+    <meta
+    ="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2d3748;
+        }
+
+        #commandes-cuisine {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .commande {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .commande:hover {
+            transform: translateY(-2px);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .pending {
+            background-color: #edf2f7;
+            color: #4a5568;
+        }
+
+        .preparing {
+            background-color: #c6f6d5;
+            color: #2f855a;
+        }
+
+        .ready {
+            background-color: #feebc8;
+            color: #c05621;
+        }
+
+        .commande-id {
+            font-size: 1.25rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .crepe-type {
+            font-size: 1.125rem;
+            color: #4a5568;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .user-name {
+            color: #718096;
+            font-size: 0.875rem;
+            display: block;
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            #commandes-cuisine {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .commande {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Commandes en cours</h1>
+    </div>
+    <div id="commandes-cuisine"></div>
+</div>
+
+<script>
+    function getStatusLabel(status) {
+        switch (status) {
+            case 'pending':
+                return 'En attente';
+            case 'preparing':
+                return 'En préparation';
+            case 'ready':
+                return 'Prête';
+            default:
+                return status;
+        }
+    }
+
+    async function updateCommandes() {
+        try {
+            const response = await fetch('/api/commandes');
+            const commandes = await response.json();
+
+            const commandesDiv = document.getElementById('commandes-cuisine');
+            commandesDiv.innerHTML = '';
+
+            commandes
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                .forEach(commande => {
+                    const commandeDiv = document.createElement('div');
+                    commandeDiv.className = `commande ${commande.status}`;
+                    commandeDiv.innerHTML = `
+                        <div class="commande-id">#${commande.id}</div>
+                        <span class="crepe-type">Crêpe ${commande.crepe_type}</span>
+
+                        <span class="status-indicator">${getStatusLabel(commande.status)}</span>
+
+                        <span class="user-name">Pour ${commande.user_name}</span>
+                    `;
+                    commandeDiv.onclick = () => changerEtatCommande(commande.id, commande.status);
+                    commandesDiv.appendChild(commandeDiv);
+                });
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
+
+    async function changerEtatCommande(id, status) {
+        let newStatus;
+        if (status === 'pending') {
+            newStatus = 'preparing';
+        } else if (status === 'preparing') {
+            newStatus = 'ready';
+        } else if (status === 'ready') {
+            newStatus = 'finished';
+        }
+
+        try {
+            await fetch(`/api/commandes/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({status: newStatus})
+            });
+            updateCommandes();
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
+
+    setInterval(updateCommandes, 1000);
+    updateCommandes();
+</script>
+</body>
+</html>
