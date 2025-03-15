@@ -340,13 +340,17 @@
         try {
             const response = await fetch('/api/commandes');
             const commandes = await response.json();
-            // Calculer le temps d'attente pour la prochaine commande (Environ 89 secondes par crêpe)
-            const tempsAttenteProchain = commandes.length * 89 + 89; // 89 secondes par crêpe + 1 minute de préparation
+            // Calculer le temps d'attente pour la prochaine commande (Environ 90 secondes par crêpe)
+            const tempsAttenteProchain = commandes.length * 90 + 30;
             const minutes = Math.floor(tempsAttenteProchain / 60);
             const secondes = tempsAttenteProchain % 60;
 
+            const date = new Date();
+            date.setMinutes(date.getMinutes() + minutes);
+            date.setSeconds(date.getSeconds() + secondes);
+
             document.getElementById('temps-attente-prochain').textContent = tempsAttenteProchain > 0
-                ? `Temps d'attente estimé pour la prochaine commande: ${minutes}m ${secondes}s`
+                ? `${commandes.length} crêpe(s) en attente | Temps d'attente: ${minutes}m ${secondes}s | Prochaine prête à partir de ${date.toLocaleTimeString()}`
                 : 'Pas d\'attente !';
         } catch (error) {
             console.error('Erreur:', error);
