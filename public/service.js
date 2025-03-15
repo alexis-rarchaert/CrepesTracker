@@ -39,18 +39,17 @@ self.addEventListener('activate', async () => {
         console.log('Error', err)
     }
 })
-self.addEventListener('push', function(event) {
+self.addEventListener("push", function(event) {
     if (event.data) {
-        console.log('Push event!! ', event.data.text())
-        showLocalNotification('Yolo', event.data.text(), self.registration)
+        console.log("Push event!! ", event.data.text());
+        showLocalNotification("Yolo", event.data.text(),  self.registration);
     } else {
-        console.log('Push event but no data')
+        console.log("Push event but no data");
     }
-})
+});
 const showLocalNotification = (title, body, swRegistration) => {
     const options = {
-        body,
-        // here you can add more properties like icon, image, vibrate, etc.
-    }
-    swRegistration.showNotification(title, options)
-}
+        body
+    };
+    swRegistration.showNotification(title, options);
+};

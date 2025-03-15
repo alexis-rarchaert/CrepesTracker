@@ -266,6 +266,25 @@
 </div>
 
 <script>
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        const error = urlParams.get('error');
+
+        if (error === 'email_non_autorise') {
+            alert('Email non autorisé. Utilisez une adresse @etu.iut-tlse3.fr ou @iut-tlse3.fr');
+        } else if (error === 'auth_failed') {
+            alert('Erreur d\'authentification');
+        } else if (userId) {
+            // Connexion réussie
+            window.userId = userId;
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('commande-form').classList.remove('hidden');
+            loadUserOrders();
+            updateTempsAttente();
+        }
+    };
+
     function closeModal() {
         document.getElementById('crepeModal').style.display = 'none';
     }
@@ -277,8 +296,6 @@
             modal.style.display = 'none';
         }
     }
-
-
 
     async function loginWithNotion() {
         window.location.href = '/auth/notion';
@@ -317,25 +334,6 @@
             console.error('Erreur:', error);
         }
     }
-
-    window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('userId');
-        const error = urlParams.get('error');
-
-        if (error === 'email_non_autorise') {
-            alert('Email non autorisé. Utilisez une adresse @etu.iut-tlse3.fr ou @iut-tlse3.fr');
-        } else if (error === 'auth_failed') {
-            alert('Erreur d\'authentification');
-        } else if (userId) {
-            // Connexion réussie
-            window.userId = userId;
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('commande-form').classList.remove('hidden');
-            loadUserOrders();
-            updateTempsAttente();
-        }
-    };
 
     async function updateTempsAttente() {
         try {
