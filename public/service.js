@@ -24,13 +24,15 @@ const saveSubscription = async subscription => {
 
 // Garder l'activation avec VAPID
 self.addEventListener('activate', async () => {
-    // This will be called only once when the service worker is installed for first time.
+    console.log('Service Worker activating..');
     try {
         const applicationServerKey = urlB64ToUint8Array(
             'BJ5IxJBWdeqFDJTvrZ4wNRu7UY2XigDXjgiUBYEYVXDudxhEs0ReOJRBcBHsPYgZ5dyV8VjyqzbQKS8V7bUAglk'
         )
         const options = { applicationServerKey, userVisibleOnly: true }
+        console.log('Registering push...');
         const subscription = await self.registration.pushManager.subscribe(options)
+        console.log('Push registered:', subscription);
         const response = await saveSubscription(subscription)
         console.log(response)
     } catch (err) {
