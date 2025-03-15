@@ -66,8 +66,11 @@ app.post('/save-subscription', async (req, res) => {
     }
 });
 
-const sendNotification = (subscription, dataToSend = '') => {
-    webpush.sendNotification(subscription, dataToSend);
+const sendNotification = (subscription, dataToSend) => {
+    if (typeof dataToSend === 'string') {
+        dataToSend = JSON.parse(dataToSend);
+    }
+    webpush.sendNotification(subscription, JSON.stringify(dataToSend));
 };
 
 app.get('/send-notification', (req, res) => {

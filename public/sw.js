@@ -3,6 +3,7 @@ self.addEventListener('install', async () => {
 });
 
 self.addEventListener('push', (event) => {
+    console.log(event.data);
     const data = event.data ? event.data.json() : {};
     event.waitUntil(
         self.registration.showNotification(data.title, {
