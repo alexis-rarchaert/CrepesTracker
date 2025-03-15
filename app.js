@@ -37,6 +37,11 @@ const pool = mysql.createPool({
 
 app.use(express.json());
 app.use(express.static('public'));
+app.use(cors(
+    {
+        origin: '*',
+    }
+));
 
 const dummyDb = { subscription: null }
 
