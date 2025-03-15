@@ -1,1 +1,3 @@
-console.log('Hello from service worker')
+self.addEventListener('activate', async () => {
+    console.log('service worker activate')
+})
