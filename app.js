@@ -1,11 +1,14 @@
+//1.0.0
 const express = require('express');
 const path = require('path');
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const { Client } = require('@notionhq/client');
 const mysql = require('mysql2/promise');
+const https = require('https');
+const fs = require('node:fs');
 const app = express();
-const port = 8083;
+const port = 8080;
 const webpush = require('web-push');
 
 const vapidKeys = {
@@ -22,7 +25,7 @@ webpush.setVapidDetails(
 
 const NOTION_CLIENT_ID = '191d872b-594c-80dd-b394-00372fd1641d';
 const NOTION_CLIENT_SECRET = 'secret_vQH4tiSLJnAnhLDAOz3UckMekqqwUyKzequbAQiBKJD';
-const REDIRECT_URI = 'http://preview.notabl.fr:8083/auth/notion/callback';
+const REDIRECT_URI = 'https://preview.notabl.fr/auth/notion/callback';
 
 // Configuration de la base de données
 const pool = mysql.createPool({
@@ -44,7 +47,9 @@ const saveToDatabase = async subscription => {
 app.post('/save-subscription', async (req, res) => {
     const subscription = req.body
     await saveToDatabase(subscription) //Method to save the subscription to Database
-    res.json({ message: 'success' })
+    res.json({ message: 'success' });
+
+    console.log("SOUSCRIPTION ENREGISTREE");
 });
 
 const sendNotification = (subscription, dataToSend = '') => {
@@ -56,6 +61,8 @@ app.get('/send-notification', (req, res) => {
     const message = 'Hello World'
     sendNotification(subscription, message)
     res.json({ message: 'message sent' });
+
+    console.log("MESSAGE ENVOYE");
 });
 
 app.get('/auth/notion', (req, res) => {
@@ -288,6 +295,11 @@ app.get('/kitchen', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'kitchen.html'));
 });
 
-app.listen(port, () => {
-    console.log(`Serveur démarré sur http://localhost:${port}`);
+const httpsOptions = {
+    key: fs.readFileSync('private.key'),
+    cert: fs.readFileSync('certificate.crt')
+};
+
+https.createServer(httpsOptions, app).listen(port, () => {
+    console.log(`Secure server started on https://localhost:${port}`);
 });
