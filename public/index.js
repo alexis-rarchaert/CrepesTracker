@@ -24,17 +24,26 @@ async function registerServiceWorker() {
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('userId');
 
-    const registration = await navigator.serviceWorker.register('sw.js');
-    let subscription = await registration.pushManager.getSubscription();
+    try {
+        const registration = await navigator.serviceWorker.register('sw.js');
+        console.log('Service Worker registered');
 
-    if(!subscription) {
-        subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: await getPublicKey(),
-        });
+        // Attendre que le Service Worker soit activé
+        await navigator.serviceWorker.ready;
+        console.log('Service Worker ready');
+
+        let subscription = await registration.pushManager.getSubscription();
+        if (!subscription) {
+            subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: await getPublicKey(),
+            });
+        }
+
+        await saveSubscription(subscription, userId);
+    } catch (error) {
+        console.error('Service Worker registration failed:', error);
     }
-
-    await saveSubscription(subscription, userId);
 }
 
 async function getPublicKey() {
