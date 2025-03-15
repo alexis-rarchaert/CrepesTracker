@@ -1,5 +1,5 @@
-// urlB64ToUint8Array is a magic function that will encode the base64 public key
-// to Array buffer which is needed by the subscription option
+console.log('Service worker loaded!');
+
 const urlB64ToUint8Array = base64String => {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
     const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
@@ -11,16 +11,16 @@ const urlB64ToUint8Array = base64String => {
     return outputArray
 }
 const saveSubscription = async subscription => {
-    const SERVER_URL = 'https://nuitaliut.preview.notabl.fr:8080/save-subscription'
+    const SERVER_URL = 'https://nuitaliut.preview.notabl.fr:8080/save-subscription';
     const response = await fetch(SERVER_URL, {
         method: 'post',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(subscription),
-    })
-    return response.json()
-}
+    });
+    return response.json();
+};
 
 // Garder l'activation avec VAPID
 self.addEventListener('activate', async () => {
