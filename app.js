@@ -358,10 +358,10 @@ const httpsOptions = {
     cert: fs.readFileSync('certificate.crt')
 };
 
-// https.createServer(httpsOptions, app).listen(port, () => {
-//     console.log(`Secure server started on https://localhost:${port}`);
-// });
-
-app.listen(port, () => {
-    console.log(`Server started on http://localhost:${port}`);
+https.createServer(httpsOptions, app).listen(port, () => {
+    console.log(`Secure server started on https://localhost:${port}`);
 });
+
+// app.listen(port, () => {
+//     console.log(`Server started on http://localhost:${port}`);
+// });
