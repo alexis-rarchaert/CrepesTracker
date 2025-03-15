@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const { Client } = require('@notionhq/client');
 const mysql = require('mysql2/promise');
 const app = express();
-const port = 80;
+const port = 8083;
 const webpush = require('web-push');
 
 const vapidKeys = {
@@ -22,7 +22,7 @@ webpush.setVapidDetails(
 
 const NOTION_CLIENT_ID = '191d872b-594c-80dd-b394-00372fd1641d';
 const NOTION_CLIENT_SECRET = 'secret_vQH4tiSLJnAnhLDAOz3UckMekqqwUyKzequbAQiBKJD';
-const REDIRECT_URI = 'http://localhost:80/auth/notion/callback';
+const REDIRECT_URI = 'http://localhost:8083/auth/notion/callback';
 
 // Configuration de la base de données
 const pool = mysql.createPool({

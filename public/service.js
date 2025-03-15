@@ -11,7 +11,7 @@ const urlB64ToUint8Array = base64String => {
     return outputArray
 }
 const saveSubscription = async subscription => {
-    const SERVER_URL = 'https://nuitaliut.preview.notabl.fr/save-subscription'
+    const SERVER_URL = 'https://nuitaliut.preview.notabl.fr:8083/save-subscription'
     const response = await fetch(SERVER_URL, {
         method: 'post',
         headers: {
