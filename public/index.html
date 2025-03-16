@@ -301,9 +301,11 @@
             const response = await fetch('/api/commandes/toggle');
             const data = await response.json();
 
+            console.log(data);
+
             commandesActives = data.active;
             const button = document.getElementById('button');
-            button.style.display = commandesActives ? 'block' : 'none';
+            button.style.visibility = commandesActives ? 'visible' : 'hidden';
 
             if (!commandesActives) {
                 document.getElementById('temps-attente-prochain').textContent = 'Les commandes sont temporairement désactivées';
