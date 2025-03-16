@@ -192,30 +192,16 @@ app.get('/auth/notion/callback', async (req, res) => {
 });
 
 app.post('/api/commandes/toggle', async (req, res) => {
+    commandes_actives = !commandes_actives;
+
     try {
-        const [rows] = await pool.query(
-            'SELECT value FROM settings WHERE name = ?',
-            ['commandes_actives']
-        );
-
-        commandesActives = JSON.parse(rows[0].value);
-        let newValue;
-        if (rows[0].value == 1) {
-            newValue = 0;
-        } else {
-            newValue = 1;
-        }
-
         await pool.query(
             'UPDATE settings SET value = ? WHERE name = ?',
-            [newValue, 'commandes_actives']
+            [JSON.stringify(commandes_actives), 'commandes_actives']
         );
-
-        commandesActives = newValue;
-        res.json({ commandes_actives: newValue });
+        res.json({ commandes_actives });
     } catch (error) {
-        console.error('Erreur toggle commandes:', error);
-        res.status(500).json({ error: 'Erreur serveur' });
+        res.status(500).json({ error: error.message });
     }
 });
 
