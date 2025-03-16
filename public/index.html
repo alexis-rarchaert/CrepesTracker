@@ -275,7 +275,7 @@
 
 <script src="index.js" defer></script>
 <script>
-    let commandesActives = false;
+    let commandesActives;
 
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -299,7 +299,7 @@
     async function checkEtatCommandes() {
         try {
             const rep = await fetch('/api/commandes/toggle', {
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }

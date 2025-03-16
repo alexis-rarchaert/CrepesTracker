@@ -219,6 +219,10 @@ app.post('/api/commandes/toggle', async (req, res) => {
     }
 });
 
+app.get('/api/commandes/toggle', async (req, res) => {
+    res.json({ commandes_actives });
+});
+
 app.get('/api/commandes/count/:userId', async (req, res) => {
     const { userId } = req.params;
 
