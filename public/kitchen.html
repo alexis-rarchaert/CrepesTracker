@@ -254,13 +254,6 @@
             newStatus = 'finished';
         }
 
-        let bodyMessage;
-        if(newStatus === 'preparing') {
-            bodyMessage = `🥞 Votre crêpe ${status} est en préparation !`;
-        } else if(newStatus === 'ready') {
-            bodyMessage = `🥞 Votre crêpe ${status} vous attend !`;
-        }
-
         try {
             await fetch(`/api/commandes/${id}`, {
                 method: 'PUT',
@@ -270,22 +263,6 @@
                 body: JSON.stringify({status: newStatus})
             });
 
-            try {
-                await fetch(`/send-notification/${user_id}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(
-                        {
-                            title: '👨‍🍳 Crêpe Tracker\'',
-                            message: bodyMessage
-                        }
-                    )
-                });
-            } catch (error) {
-                console.error('Erreur:', error);
-            }
             updateCommandes();
         } catch (error) {
             console.error('Erreur:', error);

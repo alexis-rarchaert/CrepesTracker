@@ -351,7 +351,7 @@ app.put('/api/commandes/:id', async (req, res) => {
         if (subscriptions.length > 0 && subscriptions[0].push_subscription) {
             const subscription = JSON.parse(subscriptions[0].push_subscription);
             const message = {
-                orderId: id,
+                title: '👨‍🍳 Crêpe Tracker',
                 message: getStatusMessage(status)
             };
 
@@ -367,13 +367,13 @@ app.put('/api/commandes/:id', async (req, res) => {
 function getStatusMessage(status) {
     switch(status) {
         case 'preparing':
-            return 'Votre crêpe est en préparation !';
+            return '🥞 Votre crêpe est en préparation !';
         case 'ready':
-            return 'Votre crêpe est prête !';
+            return '🥞 Votre crêpe est prête !';
         case 'finished':
-            return 'Votre crêpe a été servie.';
+            return '🥞 Votre crêpe a été servie.';
         default:
-            return 'État de votre commande mis à jour.';
+            return '🥞 État de votre commande mis à jour.';
     }
 }
 
