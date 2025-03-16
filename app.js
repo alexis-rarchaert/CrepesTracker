@@ -45,7 +45,7 @@ app.use(cors(
 
 const dummyDb = { subscription: null }
 
-let commandesActives = true;
+let commandesActives;
 
 const saveToDatabase = async subscription => {
     dummyDb.subscription = subscription
@@ -198,6 +198,7 @@ app.post('/api/commandes/toggle', async (req, res) => {
             ['commandes_actives']
         );
 
+        commandesActives = JSON.parse(rows[0].value);
         let newValue;
         if (rows[0].value == 1) {
             newValue = 0;
@@ -219,12 +220,6 @@ app.post('/api/commandes/toggle', async (req, res) => {
 });
 
 app.get('/api/commandes/count/:userId', async (req, res) => {
-    if (!commandesActives) {
-        return res.status(403).json({
-            error: 'Les commandes sont temporairement désactivées'
-        });
-    }
-
     const { userId } = req.params;
 
     try {
@@ -242,12 +237,6 @@ app.get('/api/commandes/count/:userId', async (req, res) => {
 });
 
 app.get('/api/commandes', async (req, res) => {
-    if (!commandesActives) {
-        return res.status(403).json({
-            error: 'Les commandes sont temporairement désactivées'
-        });
-    }
-
     try {
         // Récupérer toutes les commandes non terminées
         const [rows] = await pool.query(`
@@ -317,6 +306,12 @@ app.post('/api/commandes', async (req, res) => {
 
 // Route pour mettre à jour le statut d'une commande
 app.put('/api/commandes/:id', async (req, res) => {
+    if (!commandesActives) {
+        return res.status(403).json({
+            error: 'Les commandes sont temporairement désactivées'
+        });
+    }
+
     const { id } = req.params;
     const { status } = req.body;
 
