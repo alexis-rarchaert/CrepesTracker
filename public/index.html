@@ -350,7 +350,8 @@
             commandesDiv.innerHTML = '';
 
             commandes
-                .filter(commande => commande.user_id == userId)
+                .filter(commande => commande.user_id === userId)
+                .filter(commande => commande.status)
                 .forEach(commande => {
                     const commandeDiv = document.createElement('div');
                     commandeDiv.className = `commande ${commande.status}`;

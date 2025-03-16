@@ -225,6 +225,7 @@
 
             commandes
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                .filter(commande => commande.status)
                 .forEach(commande => {
                     const commandeDiv = document.createElement('div');
                     commandeDiv.className = `commande ${commande.status}`;
