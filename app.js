@@ -323,12 +323,6 @@ app.post('/api/commandes', async (req, res) => {
 
 // Route pour mettre à jour le statut d'une commande
 app.put('/api/commandes/:id', async (req, res) => {
-    if (!commandesActives) {
-        return res.status(403).json({
-            error: 'Les commandes sont temporairement désactivées'
-        });
-    }
-
     const { id } = req.params;
     const { status } = req.body;
 
