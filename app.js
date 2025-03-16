@@ -84,11 +84,10 @@ app.post('/send-notification/:userId', async (req, res) => {
 
             for (const user of users) {
                 const subscription = JSON.parse(user.push_subscription);
+                const { title, message } = req.body; // Add this line
                 const notificationData = { title, message };
 
                 await sendNotification(subscription, notificationData);
-                res.json({ message: 'Message envoyé' });
-
                 console.log("MESSAGE ENVOYÉ A TOUS LES UTILISATEURS");
             }
 
@@ -98,8 +97,7 @@ app.post('/send-notification/:userId', async (req, res) => {
             res.status(500).json({ error: 'Erreur lors de l\'envoi' });
         }
     }
-    else
-    {
+    else {
         try {
             const { title, message } = req.body;
 
@@ -115,12 +113,11 @@ app.post('/send-notification/:userId', async (req, res) => {
             const subscription = JSON.parse(users[0].push_subscription);
             const notificationData = { title, message };
 
-            await sendNotification(subscription, notificationData);
-            res.json({ message: 'Message envoyé' });
-            console.log("MESSAGE ENVOYÉ");
+            await webpush.sendNotification(subscription, JSON.stringify(notificationData));
+            return res.json({ message: 'Message envoyé' });
         } catch (error) {
             console.error('Erreur:', error);
-            res.status(500).json({ error: 'Erreur lors de l\'envoi' });
+            return res.status(500).json({ error: 'Erreur lors de l\'envoi' });
         }
     }
 });
