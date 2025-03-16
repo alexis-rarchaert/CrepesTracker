@@ -236,6 +236,25 @@ app.get('/api/commandes/count/:userId', async (req, res) => {
     }
 });
 
+app.get('/api/commandes/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const [rows] = await pool.query(`
+            SELECT o.id, o.status, o.created_at,
+                   oi.crepe_type
+            FROM orders o
+                     LEFT JOIN order_items oi ON o.id = oi.order_id
+            WHERE o.user_id = ?
+            ORDER BY o.id DESC
+        `, [userId]);
+
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get('/api/commandes', async (req, res) => {
     try {
         // Récupérer toutes les commandes non terminées
