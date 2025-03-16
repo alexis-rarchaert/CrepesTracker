@@ -25,7 +25,7 @@ webpush.setVapidDetails(
 
 const NOTION_CLIENT_ID = '191d872b-594c-80dd-b394-00372fd1641d';
 const NOTION_CLIENT_SECRET = 'secret_vQH4tiSLJnAnhLDAOz3UckMekqqwUyKzequbAQiBKJD';
-const REDIRECT_URI = 'https://nuitaliut.preview.notabl.fr:80/auth/notion/callback';
+const REDIRECT_URI = 'https://nuitaliut.preview.notabl.fr/auth/notion/callback';
 
 // Configuration de la base de données
 const pool = mysql.createPool({
@@ -44,6 +44,8 @@ app.use(cors(
 ));
 
 const dummyDb = { subscription: null }
+
+let commandesActives = true;
 
 const saveToDatabase = async subscription => {
     dummyDb.subscription = subscription
@@ -189,8 +191,35 @@ app.get('/auth/notion/callback', async (req, res) => {
     }
 });
 
-// Modifier la route de comptage des commandes
+app.post('/api/commandes/toggle', async (req, res) => {
+    try {
+        const [rows] = await pool.query(
+            'SELECT value FROM settings WHERE name = ?',
+            ['commandes_actives']
+        );
+
+        const newValue = !JSON.parse(rows[0].value);
+
+        await pool.query(
+            'UPDATE settings SET value = ? WHERE name = ?',
+            [newValue, 'commandes_actives']
+        );
+
+        commandesActives = newValue;
+        res.json({ commandes_actives: newValue });
+    } catch (error) {
+        console.error('Erreur toggle commandes:', error);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
 app.get('/api/commandes/count/:userId', async (req, res) => {
+    if (!commandesActives) {
+        return res.status(403).json({
+            error: 'Les commandes sont temporairement désactivées'
+        });
+    }
+
     const { userId } = req.params;
 
     try {
@@ -208,6 +237,12 @@ app.get('/api/commandes/count/:userId', async (req, res) => {
 });
 
 app.get('/api/commandes', async (req, res) => {
+    if (!commandesActives) {
+        return res.status(403).json({
+            error: 'Les commandes sont temporairement désactivées'
+        });
+    }
+
     try {
         // Récupérer toutes les commandes non terminées
         const [rows] = await pool.query(`
@@ -365,3 +400,35 @@ const httpsOptions = {
 app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`);
 });
+
+async function initSettings() {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS settings (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(255) NOT NULL UNIQUE,
+                value JSON NOT NULL
+            )
+        `);
+
+        const [rows] = await pool.query(
+            'SELECT value FROM settings WHERE name = ?',
+            ['' +
+            '']
+        );
+
+        if (rows.length === 0) {
+            await pool.query(
+                'INSERT INTO settings (name, value) VALUES (?, ?)',
+                ['commandes_actives', JSON.stringify(true)]
+            );
+            commandesActives = true;
+        } else {
+            commandesActives = JSON.parse(rows[0].value);
+        }
+    } catch (error) {
+        console.error('Erreur initialisation settings:', error);
+    }
+}
+
+initSettings();
