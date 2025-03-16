@@ -1,4 +1,4 @@
-//1.0.0-9
+//1.0.0-10
 const express = require('express');
 const path = require('path');
 const cors = require('cors')
@@ -192,21 +192,29 @@ app.get('/auth/notion/callback', async (req, res) => {
 });
 
 app.post('/api/commandes/toggle', async (req, res) => {
-    commandes_actives = !commandes_actives;
-
     try {
+        commandesActives = !commandesActives;
         await pool.query(
             'UPDATE settings SET value = ? WHERE name = ?',
-            [JSON.stringify(commandes_actives), 'commandes_actives']
+            [JSON.stringify(commandesActives), 'commandes_actives']
         );
-        res.json({ commandes_actives });
+        res.json({ active: commandesActives });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
 app.get('/api/commandes/toggle', async (req, res) => {
-    res.json({ commandes_actives });
+    try {
+        const [rows] = await pool.query(
+            'SELECT value FROM settings WHERE name = ?',
+            ['commandes_actives']
+        );
+        const commandesActives = rows.length > 0 ? JSON.parse(rows[0].value) : true;
+        res.json({ active: commandesActives });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 app.get('/api/commandes/count/:userId', async (req, res) => {
@@ -270,7 +278,7 @@ app.get('/api/commandes', async (req, res) => {
         }
         const commandesAvecTemps = rows.map(commande => ({
             ...commande,
-            temps_attente: commande.commandes_avant * 90 // en secondes
+            temps_attente: commande.commandes_avant * 90
         }));
 
         res.json(commandesAvecTemps);

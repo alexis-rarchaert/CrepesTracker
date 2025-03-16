@@ -298,15 +298,15 @@
 
     async function checkEtatCommandes() {
         try {
-            const rep = await fetch('/api/commandes/toggle');
-            console.log(rep);
+            const response = await fetch('/api/commandes/toggle');
+            const data = await response.json();
 
-            if(rep === 1) {
-                commandesActives = true;
-                document.getElementById('button').style.display = 'block';
-            } else {
-                commandesActives = false;
-                document.getElementById('button').style.display = 'none';
+            commandesActives = data.active;
+            const button = document.getElementById('button');
+            button.style.display = commandesActives ? 'block' : 'none';
+
+            if (!commandesActives) {
+                document.getElementById('temps-attente-prochain').textContent = 'Les commandes sont temporairement désactivées';
             }
         } catch (error) {
             console.error('Erreur:', error);
