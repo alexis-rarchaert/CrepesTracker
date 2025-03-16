@@ -275,6 +275,8 @@
 
 <script src="index.js" defer></script>
 <script>
+    let commandesActives = false;
+
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('userId');
@@ -285,14 +287,33 @@
         } else if (error === 'auth_failed') {
             alert('Erreur d\'authentification');
         } else if (userId) {
-            // Connexion réussie
             window.userId = userId;
             document.getElementById('login-form').classList.add('hidden');
             document.getElementById('commande-form').classList.remove('hidden');
             loadUserOrders();
             updateTempsAttente();
+            checkEtatCommandes();
         }
     };
+
+    async function checkEtatCommandes() {
+        try {
+            const rep = await fetch('/api/commandes/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if(rep.commandes_actives === true) {
+                commandesActives = true;
+                document.getElementById('button').style.display = 'block';
+            } else {
+                commandesActives = false;
+                document.getElementById('button').style.display = 'none';
+            }
+        }
+    }
 
     function closeModal() {
         document.getElementById('crepeModal').style.display = 'none';
@@ -420,26 +441,11 @@
         }
     }
 
-    window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('userId');
-        const error = urlParams.get('error');
 
-        if (error === 'email_non_autorise') {
-            alert('Email non autorisé. Utilisez une adresse @etu.iut-tlse3.fr ou @iut-tlse3.fr');
-        } else if (error === 'auth_failed') {
-            alert('Erreur d\'authentification');
-        } else if (userId) {
-            window.userId = userId;
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('commande-form').classList.remove('hidden');
-            loadUserOrders();
-            updateTempsAttente();
-        }
-    };
 
     setInterval(updateTempsAttente, 1000);
     setInterval(loadUserOrders, 1000);
+    setInterval(checkEtatCommandes, 1000);
     updateTempsAttente();
 </script>
 
