@@ -166,6 +166,17 @@
                 padding: 1rem;
             }
         }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -182,6 +193,9 @@
     </div>
     <div id="commandes-cuisine"></div>
 </div>
+<footer id="data">
+
+</footer>
 <script>
     let commandesActives = true;
 
@@ -240,6 +254,9 @@
                     commandeDiv.onclick = () => changerEtatCommande(commande.id, commande.status, commande.user_id);
                     commandesDiv.appendChild(commandeDiv);
                 });
+
+            //Afficher dans le footer "x crêpes traités | y crêpes en attente"
+            document.getElementById('data').innerHTML = `${commandes.filter(commande => commande.status === '').length} crêpes traitées | ${commandes.filter(commande => commande.status !== '').length} crêpes en attente`;
         } catch (error) {
             console.error('Erreur:', error);
         }
