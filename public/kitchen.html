@@ -77,6 +77,11 @@
             color: #c05621;
         }
 
+        .expired {
+            background-color: #f7d4da;
+            color: #9b2c2c;
+        }
+
         .commande-id {
             font-size: 1.25rem;
             color: #2d3748;
@@ -255,13 +260,13 @@
                 .filter(commande => commande.status)
                 .forEach(commande => {
                     const commandeDiv = document.createElement('div');
-                    commandeDiv.className = `commande ${commande.status}`;
+                    let tempsEcoule = Math.floor((new Date() - new Date(commande.created_at)) / 1000);
+                    commandeDiv.className = `commande ${commande.status} ${tempsEcoule > 60 ? 'expired' : ''}`;
                     commandeDiv.innerHTML = `
                         <div class="commande-id">#${commande.id}</div>
                         <span class="crepe-type">Crêpe ${commande.crepe_type}</span>
 
-                        <span class="status-indicator">${getStatusLabel(commande.status)}
-                            <br>Temps écoulé : ${Math.floor((new Date() - new Date(commande.created_at)) / 1000)}s
+                        <span class="status-indicator">${getStatusLabel(commande.status)} (${tempsEcoule}s)
                         </span>
 
 
