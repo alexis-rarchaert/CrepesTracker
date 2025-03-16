@@ -344,7 +344,7 @@
         if (!userId) return;
 
         try {
-            const response = await fetch('/api/commandes/' + userId);
+            const response = await fetch('/api/commandes/');
             const commandes = await response.json();
             const commandesDiv = document.getElementById('commandes');
             commandesDiv.innerHTML = '';
