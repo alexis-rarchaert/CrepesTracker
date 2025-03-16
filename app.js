@@ -198,7 +198,12 @@ app.post('/api/commandes/toggle', async (req, res) => {
             ['commandes_actives']
         );
 
-        const newValue = !JSON.parse(rows[0].value);
+        let newValue;
+        if (rows[0].value == 1) {
+            newValue = 0;
+        } else {
+            newValue = 1;
+        }
 
         await pool.query(
             'UPDATE settings SET value = ? WHERE name = ?',
