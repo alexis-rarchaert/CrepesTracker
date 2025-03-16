@@ -298,16 +298,10 @@
 
     async function checkEtatCommandes() {
         try {
-            const rep = await fetch('/api/commandes/toggle', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
+            const rep = await fetch('/api/commandes/toggle');
             console.log(rep);
 
-            if(rep.commandes_actives === 1) {
+            if(rep === 1) {
                 commandesActives = true;
                 document.getElementById('button').style.display = 'block';
             } else {
