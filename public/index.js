@@ -51,7 +51,7 @@ async function getPublicKey() {
 }
 
 async function saveSubscription(subscription, userId) {
-    await fetch('http://nuitaliut.preview.notabl.fr/save-subscription', {
+    await fetch('https://nuitaliut.preview.notabl.fr/save-subscription', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
