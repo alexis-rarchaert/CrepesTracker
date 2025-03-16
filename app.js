@@ -8,7 +8,7 @@ const mysql = require('mysql2/promise');
 const https = require('https');
 const fs = require('node:fs');
 const app = express();
-const port = 8080;
+const port = 80;
 const webpush = require('web-push');
 
 const vapidKeys = {
@@ -25,7 +25,7 @@ webpush.setVapidDetails(
 
 const NOTION_CLIENT_ID = '191d872b-594c-80dd-b394-00372fd1641d';
 const NOTION_CLIENT_SECRET = 'secret_vQH4tiSLJnAnhLDAOz3UckMekqqwUyKzequbAQiBKJD';
-const REDIRECT_URI = 'https://preview.notabl.fr:8080/auth/notion/callback';
+const REDIRECT_URI = 'https://nuitaliut.preview.notabl.fr:80/auth/notion/callback';
 
 // Configuration de la base de données
 const pool = mysql.createPool({
@@ -358,10 +358,10 @@ const httpsOptions = {
     cert: fs.readFileSync('certificate.crt')
 };
 
-https.createServer(httpsOptions, app).listen(port, () => {
-    console.log(`Secure server started on https://localhost:${port}`);
-});
-
-// app.listen(port, () => {
-//     console.log(`Server started on http://localhost:${port}`);
+// https.createServer(httpsOptions, app).listen(port, () => {
+//     console.log(`Secure server started on https://localhost:${port}`);
 // });
+
+app.listen(port, () => {
+    console.log(`Server started on http://localhost:${port}`);
+});
