@@ -159,7 +159,15 @@ app.get('/auth/notion/callback', async (req, res) => {
         const userEmail = userData.bot.owner.user.person.email;
         const userName = userData.bot.owner.user.name;
 
-        if (!userEmail.endsWith('@etu.iut-tlse3.fr') && !userEmail.endsWith('@iut-tlse3.fr')) {
+        if (
+            !userEmail.endsWith('@etu.iut-tlse3.fr') &&
+            !userEmail.endsWith('@iut-tlse3.fr') &&
+            !userEmail.endsWith('romainraynaud81@gmail.com') &&
+            !userEmail.endsWith('elliessmahir8@gmail.com') &&
+            !userEmail.endsWith('hombert.fabien@gmail.com') &&
+            !userEmail.endsWith('grayssaguel.fabien@gmail.com') &&
+            !userEmail.endsWith('mathilde97133@gmail.com')
+        ) {
             return res.redirect('/?error=email_non_autorise');
         }
 
