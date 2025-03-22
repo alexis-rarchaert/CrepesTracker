@@ -380,20 +380,20 @@
         if (!window.userId) return;
 
         try {
-            const response = await fetch('/api/commandes/');
+            const response = await fetch(`/api/commandes/${window.userId}`);
             const commandes = await response.json();
             const commandesDiv = document.getElementById('commandes');
             commandesDiv.innerHTML = '';
 
             commandes
-                .filter(commande => commande.user_id === window.userId)
+                .filter(commande => commande.status !== 'finished')
                 .forEach(commande => {
                     const commandeDiv = document.createElement('div');
                     commandeDiv.className = `commande ${commande.status}`;
                     commandeDiv.innerHTML = `
-                        <span class="crepe-type">Crêpe ${commande.crepe_type}</span>
-                        <span class="status-indicator">${getStatusLabel(commande.status)}</span>
-                    `;
+                    <span class="crepe-type">Crêpe ${commande.crepe_type}</span>
+                    <span class="status-indicator">${getStatusLabel(commande.status)}</span>
+                `;
                     commandesDiv.appendChild(commandeDiv);
                 });
         } catch (error) {
