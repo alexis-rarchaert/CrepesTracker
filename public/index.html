@@ -254,6 +254,22 @@
             background: #f7fafc;
             border-radius: 4px;
         }
+
+        .beverage-select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-top: 1rem;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .beverage-select:focus {
+            border-color: #4a5568;
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -516,7 +532,7 @@
             const beverageOptions = modal.querySelector('#beverage-options');
 
             crepeOptions.innerHTML = '';
-            beverageOptions.innerHTML = '';
+            beverageOptions.innerHTML = '<h3>Boisson (une seule dans la soirée)</h3>';
 
             availableTypes.forEach(type => {
                 const button = document.createElement('button');
@@ -528,18 +544,28 @@
             });
 
             if (!hasBeverage) {
-                beverages.forEach(beverage => {
-                    if (beverage.quantity > 0) {
-                        const button = document.createElement('button');
-                        button.className = 'beverage-option-btn';
-                        button.dataset.id = beverage.id;
-                        button.onclick = () => selectBeverage(beverage.id);
-                        button.textContent = beverage.name;
-                        beverageOptions.appendChild(button);
-                    }
-                });
+                const select = document.createElement('select');
+                select.className = 'beverage-select';
+                select.onchange = (e) => selectBeverage(e.target.value);
+
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Choisissez une boisson';
+                defaultOption.selected = true;
+                select.appendChild(defaultOption);
+
+                beverages
+                    .filter(beverage => beverage.quantity > 0)
+                    .forEach(beverage => {
+                        const option = document.createElement('option');
+                        option.value = beverage.id;
+                        option.textContent = beverage.name;
+                        select.appendChild(option);
+                    });
+
+                beverageOptions.appendChild(select);
             } else {
-                beverageOptions.innerHTML = '<p>Vous avez déjà reçu votre boisson</p>';
+                beverageOptions.innerHTML += '<p>Vous avez déjà reçu votre boisson</p>';
             }
 
             selectedCrepe = null;
@@ -549,6 +575,10 @@
             console.error('Erreur:', error);
             alert('Une erreur est survenue');
         }
+    }
+
+    function selectBeverage(id) {
+        selectedBeverage = id || null;
     }
 
     async function commanderCrepe(type) {
