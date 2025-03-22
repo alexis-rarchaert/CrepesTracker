@@ -411,7 +411,7 @@
 
             const commandesAvecStatus = commandes.filter(commande => commande.status);
 
-            const tempsAttenteProchain = commandesAvecStatus.length * 90 + 30;
+            const tempsAttenteProchain = commandesAvecStatus.length * 90 + 30 + Math.random() * 60;
             const minutes = Math.floor(tempsAttenteProchain / 60);
             const secondes = tempsAttenteProchain % 60;
 
