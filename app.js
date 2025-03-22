@@ -295,22 +295,48 @@ app.get('/api/commandes', async (req, res) => {
 // Route pour créer une nouvelle commande
 app.post('/api/commandes', async (req, res) => {
     const { userId, crepeType } = req.body;
+
+    // Validate required fields
     if (!userId) {
         return res.status(400).json({ error: 'UserId requis' });
     }
-    if (!['nature', 'sucre', 'nutella'].includes(crepeType)) {
-        return res.status(400).json({ error: 'Type de crêpe invalide' });
+    if (!crepeType) {
+        return res.status(400).json({ error: 'Type de crêpe requis' });
     }
 
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
 
+        // Check if crepe type is available
+        const [types] = await connection.query(
+            'SELECT active FROM crepe_types WHERE type = ?',
+            [crepeType]
+        );
+
+        if (types.length === 0 || !types[0].active) {
+            await connection.rollback();
+            return res.status(400).json({ error: 'Type de crêpe non disponible' });
+        }
+
+        // Check user order count
+        const [orders] = await connection.query(
+            'SELECT COUNT(*) as count FROM orders WHERE user_id = ? AND DATE(created_at) = CURDATE() AND status != "finished"',
+            [userId]
+        );
+
+        if (orders[0].count >= 2) {
+            await connection.rollback();
+            return res.status(400).json({ error: 'Limite de commandes atteinte' });
+        }
+
+        // Create order
         const [orderResult] = await connection.query(
             'INSERT INTO orders (user_id, status) VALUES (?, ?)',
             [userId, 'pending']
         );
 
+        // Add order items
         await connection.query(
             'INSERT INTO order_items (order_id, crepe_type, quantity) VALUES (?, ?, ?)',
             [orderResult.insertId, crepeType, 1]
@@ -320,7 +346,8 @@ app.post('/api/commandes', async (req, res) => {
         res.json({ id: orderResult.insertId });
     } catch (error) {
         await connection.rollback();
-        res.status(500).json({ error: error.message });
+        console.error('Order creation error:', error);
+        res.status(500).json({ error: 'Erreur lors de la création de la commande' });
     } finally {
         connection.release();
     }
