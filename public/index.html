@@ -199,7 +199,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .close-btn {
@@ -344,7 +344,7 @@
             button.style.visibility = commandesActives ? 'visible' : 'hidden';
 
             if (!commandesActives) {
-                document.getElementById('temps-attente-prochain').textContent = 'Les commandes sont temporairement désactivées';
+                document.getElementById('temps-attente-prochain').textContent = 'Les commandes de crêpes et la collecte de boissons sont actuellement fermées';
             }
         } catch (error) {
             console.error('Erreur:', error);
