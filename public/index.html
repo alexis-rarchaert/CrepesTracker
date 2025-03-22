@@ -289,7 +289,7 @@
         </div>
     </div>
 
-    <div id="beverages-info" class="beverages-info">
+    <div id="beverages-info" class="beverages-info hidden">
         <h3>Boissons disponibles</h3>
         <div id="beverages-list"></div>
     </div>
@@ -322,6 +322,7 @@
             window.userId = userId;
             document.getElementById('login-form').classList.add('hidden');
             document.getElementById('commande-form').classList.remove('hidden');
+            document.getElementById('beverages-info').classList.remove('hidden');
             loadUserOrders();
             updateTempsAttente();
             checkEtatCommandes();
