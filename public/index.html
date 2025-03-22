@@ -254,22 +254,6 @@
             background: #f7fafc;
             border-radius: 4px;
         }
-
-        .beverage-select {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            margin-top: 1rem;
-            background-color: white;
-            cursor: pointer;
-        }
-
-        .beverage-select:focus {
-            border-color: #4a5568;
-            outline: none;
-        }
     </style>
 </head>
 <body>
@@ -298,16 +282,12 @@
     <div id="crepeModal" class="modal">
         <div class="modal-content">
             <button onclick="closeModal()" class="close-btn">&times;</button>
-            <h2>Choisissez votre commande</h2>
+            <h2>Choisissez votre type de crêpe</h2>
             <div class="crepe-options">
-                <h3>Type de crêpe</h3>
-                <!-- Filled dynamically -->
+                <button class="crepe-option-btn" onclick="commanderCrepe('nature')">Nature</button>
+                <button class="crepe-option-btn" onclick="commanderCrepe('sucre')">Sucre</button>
+                <button class="crepe-option-btn" onclick="commanderCrepe('nutella')">Nutella</button>
             </div>
-            <div class="beverage-options" id="beverage-options">
-                <h3>Boisson (une seule dans la soirée)</h3>
-                <!-- Filled dynamically -->
-            </div>
-            <button class="commande-btn" onclick="commanderCrepeEtBoisson()">Commander</button>
         </div>
     </div>
 
@@ -447,55 +427,6 @@
         }
     }
 
-    let selectedCrepe = null;
-    let selectedBeverage = null;
-
-    function selectCrepe(type) {
-        selectedCrepe = type;
-        document.querySelectorAll('.crepe-option-btn').forEach(btn => {
-            btn.classList.toggle('selected', btn.dataset.type === type);
-        });
-    }
-
-    function selectBeverage(id) {
-        selectedBeverage = id;
-        document.querySelectorAll('.beverage-option-btn').forEach(btn => {
-            btn.classList.toggle('selected', btn.dataset.id === id);
-        });
-    }
-
-    async function commanderCrepeEtBoisson() {
-        if (!selectedCrepe) {
-            alert('Veuillez choisir une crêpe');
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/commandes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userId,
-                    crepeType: selectedCrepe,
-                    beverageId: selectedBeverage
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Erreur lors de la commande');
-            }
-
-            document.getElementById('crepeModal').style.display = 'none';
-            await loadUserOrders();
-            await updateTempsAttente();
-        } catch (error) {
-            console.error('Erreur:', error);
-            alert('Une erreur est survenue lors de la commande');
-        }
-    }
-
     async function passerCommande() {
         if (!userId) {
             alert('Veuillez vous connecter');
@@ -503,15 +434,8 @@
         }
 
         try {
-            const [typesResponse, beveragesResponse] = await Promise.all([
-                fetch('/api/crepes/types'),
-                fetch('/api/beverages')
-            ]);
-
-            const [types, beverages] = await Promise.all([
-                typesResponse.json(),
-                beveragesResponse.json()
-            ]);
+            const typesResponse = await fetch('/api/crepes/types');
+            const types = await typesResponse.json();
 
             const availableTypes = types.filter(t => t.active);
             if (availableTypes.length === 0) {
@@ -520,7 +444,7 @@
             }
 
             const countResponse = await fetch(`/api/commandes/count/${userId}`);
-            const { count, hasBeverage } = await countResponse.json();
+            const { count } = await countResponse.json();
 
             if (count >= 2) {
                 alert('Vous avez déjà commandé 2 crêpes !');
@@ -528,57 +452,23 @@
             }
 
             const modal = document.getElementById('crepeModal');
-            const crepeOptions = modal.querySelector('.crepe-options');
-            const beverageOptions = modal.querySelector('#beverage-options');
+            const options = modal.querySelector('.crepe-options');
+            options.innerHTML = '';
 
-            crepeOptions.innerHTML = '';
-            beverageOptions.innerHTML = '<h3>Boisson (une seule dans la soirée)</h3>';
-
+            // Only show available crêpe types
             availableTypes.forEach(type => {
                 const button = document.createElement('button');
                 button.className = 'crepe-option-btn';
-                button.dataset.type = type.type;
-                button.onclick = () => selectCrepe(type.type);
+                button.onclick = () => commanderCrepe(type.type);
                 button.textContent = type.type;
-                crepeOptions.appendChild(button);
+                options.appendChild(button);
             });
 
-            if (!hasBeverage) {
-                const select = document.createElement('select');
-                select.className = 'beverage-select';
-                select.onchange = (e) => selectBeverage(e.target.value);
-
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = 'Choisissez une boisson';
-                defaultOption.selected = true;
-                select.appendChild(defaultOption);
-
-                beverages
-                    .filter(beverage => beverage.quantity > 0)
-                    .forEach(beverage => {
-                        const option = document.createElement('option');
-                        option.value = beverage.id;
-                        option.textContent = beverage.name;
-                        select.appendChild(option);
-                    });
-
-                beverageOptions.appendChild(select);
-            } else {
-                beverageOptions.innerHTML += '<p>Vous avez déjà reçu votre boisson</p>';
-            }
-
-            selectedCrepe = null;
-            selectedBeverage = null;
             modal.style.display = 'block';
         } catch (error) {
             console.error('Erreur:', error);
             alert('Une erreur est survenue');
         }
-    }
-
-    function selectBeverage(id) {
-        selectedBeverage = id || null;
     }
 
     async function commanderCrepe(type) {
