@@ -431,12 +431,13 @@
         }
 
         try {
-            // Demander la permission de notification si pas déjà accordée
-            if (Notification.permission === "default") {
-                const permission = await Notification.requestPermission();
-                if (permission === "denied") {
-                    console.warn("Notifications refusées");
-                }
+            const typesResponse = await fetch('/api/crepes/types');
+            const types = await typesResponse.json();
+
+            const availableTypes = types.filter(t => t.active);
+            if (availableTypes.length === 0) {
+                alert('Aucun type de crêpe n\'est disponible pour le moment');
+                return;
             }
 
             const countResponse = await fetch(`/api/commandes/count/${userId}`);
@@ -447,7 +448,19 @@
                 return;
             }
 
-            document.getElementById('crepeModal').style.display = 'block';
+            const modal = document.getElementById('crepeModal');
+            const options = modal.querySelector('.crepe-options');
+            options.innerHTML = '';
+
+            availableTypes.forEach(type => {
+                const button = document.createElement('button');
+                button.className = 'crepe-option-btn';
+                button.onclick = () => commanderCrepe(type.type);
+                button.textContent = `${type.type}`;
+                options.appendChild(button);
+            });
+
+            modal.style.display = 'block';
         } catch (error) {
             console.error('Erreur:', error);
         }

@@ -475,4 +475,28 @@ app.put('/api/beverages/:id', async (req, res) => {
     }
 });
 
+// Add crepes settings table and routes
+app.get('/api/crepes/types', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM crepe_types');
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/crepes/types/:type', async (req, res) => {
+    const { type } = req.params;
+    const { active } = req.body;
+    try {
+        await pool.query(
+            'UPDATE crepe_types SET active = ? WHERE type = ?',
+            [active, type]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 initSettings();
