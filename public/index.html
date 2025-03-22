@@ -452,22 +452,35 @@
             const options = modal.querySelector('.crepe-options');
             options.innerHTML = '';
 
+            // Only show available crêpe types
             availableTypes.forEach(type => {
                 const button = document.createElement('button');
                 button.className = 'crepe-option-btn';
                 button.onclick = () => commanderCrepe(type.type);
-                button.textContent = `${type.type}`;
+                button.textContent = type.type;
                 options.appendChild(button);
             });
 
             modal.style.display = 'block';
         } catch (error) {
             console.error('Erreur:', error);
+            alert('Une erreur est survenue');
         }
     }
 
     async function commanderCrepe(type) {
         try {
+            // Check if type is still available before ordering
+            const typesResponse = await fetch('/api/crepes/types');
+            const types = await typesResponse.json();
+            const isTypeAvailable = types.find(t => t.type === type && t.active);
+
+            if (!isTypeAvailable) {
+                alert('Ce type de crêpe n\'est plus disponible');
+                document.getElementById('crepeModal').style.display = 'none';
+                return;
+            }
+
             const response = await fetch('/api/commandes', {
                 method: 'POST',
                 headers: {
@@ -478,17 +491,18 @@
                     crepeType: type
                 })
             });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de la commande');
+            }
+
             const data = await response.json();
-
-            const commandeDiv = document.createElement('div');
-            commandeDiv.className = 'commande';
-            commandeDiv.textContent = `Crêpe ${type} #${data.id}`;
-            document.getElementById('commandes').appendChild(commandeDiv);
-
             document.getElementById('crepeModal').style.display = 'none';
+            await loadUserOrders();
             await updateTempsAttente();
         } catch (error) {
             console.error('Erreur:', error);
+            alert('Une erreur est survenue lors de la commande');
         }
     }
 
