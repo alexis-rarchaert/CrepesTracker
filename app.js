@@ -447,4 +447,32 @@ async function initSettings() {
     }
 }
 
+// Get beverages
+app.get('/api/beverages', async (req, res) => {
+    try {
+        const [rows] = await pool.query(
+            'SELECT * FROM beverages WHERE active = true'
+        );
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Update beverage quantity
+app.put('/api/beverages/:id', async (req, res) => {
+    const { id } = req.params;
+    const { quantity, active } = req.body;
+
+    try {
+        await pool.query(
+            'UPDATE beverages SET quantity = ?, active = ? WHERE id = ?',
+            [quantity, active, id]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 initSettings();

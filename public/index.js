@@ -2,9 +2,9 @@ function main() {
     const permission = document.getElementById('button');
     if(
         (!permission &&
-        !('Notification' in window) &&
-        !('serviceWorker' in navigator)) ||
-    (Notification.permission !== 'default')) {
+            !('Notification' in window) &&
+            !('serviceWorker' in navigator)) ||
+        (Notification.permission !== 'default')) {
         return;
     }
 

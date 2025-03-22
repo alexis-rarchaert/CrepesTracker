@@ -236,6 +236,23 @@
             font-size: 0.875rem;
             display: block;
         }
+
+        .beverages-info {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .beverage-item {
+            display: inline-block;
+            margin: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f7fafc;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -249,7 +266,7 @@
     </div>
     <div id="login-form">
         <button onclick="loginWithNotion()" class="notion-btn">
-                Se connecter avec Notion
+            Se connecter avec Notion
         </button>
     </div>
 
@@ -270,6 +287,11 @@
                 <button class="crepe-option-btn" onclick="commanderCrepe('nutella')">Nutella</button>
             </div>
         </div>
+    </div>
+
+    <div id="beverages-info" class="beverages-info">
+        <h3>Boissons disponibles</h3>
+        <div id="beverages-list"></div>
     </div>
 </div>
 
@@ -351,7 +373,7 @@
     }
 
     async function loadUserOrders() {
-        if (!userId) return;
+        if (!window.userId) return;
 
         try {
             const response = await fetch('/api/commandes/');
@@ -360,8 +382,7 @@
             commandesDiv.innerHTML = '';
 
             commandes
-                .filter(commande => commande.user_id === userId)
-                .filter(commande => commande.status)
+                .filter(commande => commande.user_id === window.userId)
                 .forEach(commande => {
                     const commandeDiv = document.createElement('div');
                     commandeDiv.className = `commande ${commande.status}`;
@@ -454,7 +475,27 @@
         }
     }
 
+    async function updateBeverages() {
+        try {
+            const response = await fetch('/api/beverages');
+            const beverages = await response.json();
 
+            const container = document.getElementById('beverages-list');
+            container.innerHTML = '';
+
+            beverages.forEach(beverage => {
+                const div = document.createElement('div');
+                div.className = 'beverage-item';
+                div.textContent = `${beverage.name}: ${beverage.quantity}`;
+                container.appendChild(div);
+            });
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
+
+    setInterval(updateBeverages, 5000);
+    updateBeverages();
 
     setInterval(updateTempsAttente, 5000);
     setInterval(loadUserOrders, 1000);
