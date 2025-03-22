@@ -520,7 +520,12 @@
             beverages.forEach(beverage => {
                 const div = document.createElement('div');
                 div.className = 'beverage-item';
-                div.textContent = beverage.name + (beverage.quantity < 5 ? ' (peu restant)' : '');
+                if (beverage.quantity <= 5) {
+                    div.style.backgroundColor = '#feebc8';
+                    div.textContent = `${beverage.name} (peu restant)`;
+                } else {
+                    div.textContent = beverage.name;
+                }
                 container.appendChild(div);
             });
         } catch (error) {
@@ -528,13 +533,12 @@
         }
     }
 
-    setInterval(updateBeverages, 5000);
-    updateBeverages();
-
+    setInterval(updateBeverages, 3000);
     setInterval(updateTempsAttente, 5000);
     setInterval(loadUserOrders, 1000);
     setInterval(checkEtatCommandes, 1000);
     updateTempsAttente();
+    updateBeverages();
 </script>
 
 </body>
