@@ -343,6 +343,7 @@
             commandesActives = data.active;
             const button = document.getElementById('button');
             button.style.visibility = commandesActives ? 'visible' : 'hidden';
+            document.getElementById('beverages-info').style.display = commandesActives ? 'block' : 'none';
 
             if (!commandesActives) {
                 document.getElementById('temps-attente-prochain').textContent = 'Les commandes de crêpes et la collecte de boissons sont actuellement fermées';
