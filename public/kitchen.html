@@ -382,6 +382,7 @@
                     commandeDiv.innerHTML = `
                     <div class="commande-id">#${commande.id}</div>
                     <span class="crepe-type">Crêpe ${commande.crepe_type}</span>
+                    ${commande.beverage_name ? `<span class="beverage-type">+ ${commande.beverage_name}</span>` : ''}
                     <span class="status-indicator">
                         ${getStatusLabel(commande.status)}
                         (<span class="${tempsEcoule > 60 ? 'late-timer' : ''}">${tempsEcoule}s</span>)
@@ -391,8 +392,6 @@
                     commandeDiv.onclick = () => changerEtatCommande(commande.id, commande.status, commande.user_id);
                     commandesDiv.appendChild(commandeDiv);
                 });
-
-            document.getElementById('data').innerHTML = `${commandes.filter(commande => commande.status === '').length} crêpes traitées | ${commandes.filter(commande => commande.status !== '').length} crêpes en attente`;
         } catch (error) {
             console.error('Erreur:', error);
         }
