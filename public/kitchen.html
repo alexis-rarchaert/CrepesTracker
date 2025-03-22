@@ -271,6 +271,17 @@
         input:checked + .crepe-slider:before {
             transform: translateX(26px);
         }
+
+        @keyframes blink {
+            0% { color: inherit; }
+            50% { color: #e53e3e; }
+            100% { color: inherit; }
+        }
+
+        .late-timer {
+            animation: blink 1s infinite;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -367,22 +378,20 @@
                 .forEach(commande => {
                     const commandeDiv = document.createElement('div');
                     let tempsEcoule = Math.floor((new Date() - new Date(commande.created_at)) / 1000);
-                    commandeDiv.className = `commande ${commande.status} ${tempsEcoule > 60 ? 'expired' : ''}`;
+                    commandeDiv.className = `commande ${commande.status}`;
                     commandeDiv.innerHTML = `
-                        <div class="commande-id">#${commande.id}</div>
-                        <span class="crepe-type">Crêpe ${commande.crepe_type}</span>
-
-                        <span class="status-indicator">${getStatusLabel(commande.status)} (${tempsEcoule}s)
-                        </span>
-
-
-                        <span class="user-name">Pour ${commande.user_name}</span>
-                    `;
+                    <div class="commande-id">#${commande.id}</div>
+                    <span class="crepe-type">Crêpe ${commande.crepe_type}</span>
+                    <span class="status-indicator">
+                        ${getStatusLabel(commande.status)}
+                        (<span class="${tempsEcoule > 60 ? 'late-timer' : ''}">${tempsEcoule}s</span>)
+                    </span>
+                    <span class="user-name">Pour ${commande.user_name}</span>
+                `;
                     commandeDiv.onclick = () => changerEtatCommande(commande.id, commande.status, commande.user_id);
                     commandesDiv.appendChild(commandeDiv);
                 });
 
-            //Afficher dans le footer "x crêpes traités | y crêpes en attente"
             document.getElementById('data').innerHTML = `${commandes.filter(commande => commande.status === '').length} crêpes traitées | ${commandes.filter(commande => commande.status !== '').length} crêpes en attente`;
         } catch (error) {
             console.error('Erreur:', error);
