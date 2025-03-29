@@ -456,8 +456,7 @@ async function initSettings() {
 
         const [rows] = await pool.query(
             'SELECT value FROM settings WHERE name = ?',
-            ['' +
-            '']
+            ['commandes_actives']
         );
 
         if (rows.length === 0) {
@@ -470,7 +469,10 @@ async function initSettings() {
             commandesActives = JSON.parse(rows[0].value);
         }
     } catch (error) {
-        console.error('Erreur initialisation settings:', error);
+        // Only log real errors, not the duplicate entry error
+        if (error.code !== 'ER_DUP_ENTRY') {
+            console.error('Erreur initialisation settings:', error);
+        }
     }
 }
 

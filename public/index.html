@@ -100,12 +100,11 @@
         }
 
         #commandes {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            flex-direction: row;
-            margin-bottom: 2rem;
+            margin: 0 auto;
+            max-width: 800px;
         }
 
         .commande {
@@ -113,41 +112,59 @@
             padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
             transition: transform 0.2s;
-            width: max-content;
+            position: relative;
         }
 
         .commande:hover {
             transform: translateY(-2px);
         }
 
+        .commande.pending {
+            border-left: 4px solid #718096;
+        }
+
+        .commande.preparing {
+            border-left: 4px solid #38a169;
+        }
+
+        #beverages-info {
+            margin-top: 2rem;
+        }
+
+        .commande.ready {
+            border-left: 4px solid #dd6b20;
+        }
+
         .status-indicator {
             display: inline-block;
-            padding: 4px 0;
+            padding: 4px 8px;
             border-radius: 4px;
             font-size: 0.875rem;
             font-weight: 500;
         }
 
-        .pending {
-            background-color: #edf2f7;
-            color: #4a5568;
+        .commande.pending .status-indicator {
+            background-color: #718096;
+            color: white;
         }
 
-        .preparing {
-            background-color: #c6f6d5;
-            color: #2f855a;
+        .commande.preparing .status-indicator {
+            background-color: #38a169;
+            color: white;
         }
 
-        .ready {
-            background-color: #feebc8;
-            color: #c05621;
+        .commande.ready .status-indicator {
+            background-color: #dd6b20;
+            color: white;
         }
 
         .crepe-type {
             font-size: 1.125rem;
             color: #2d3748;
             display: block;
+            margin-bottom: 0.5rem;
         }
 
         .modal {
@@ -224,7 +241,8 @@
 
         @media screen and (max-width: 768px) {
             #commandes {
-                flex-direction: column;
+                grid-template-columns: 1fr;
+                max-width: 600px;
             }
 
             .commande {
@@ -411,7 +429,7 @@
 
             const commandesAvecStatus = commandes.filter(commande => commande.status);
 
-            const tempsAttenteProchain = commandesAvecStatus.length * 90 + 80;
+            const tempsAttenteProchain = commandesAvecStatus.length * 70;
             const minutes = Math.floor(tempsAttenteProchain / 60);
             const secondes = tempsAttenteProchain % 60;
 
@@ -533,10 +551,11 @@
         }
     }
 
-    setInterval(updateBeverages, 3000);
-    setInterval(updateTempsAttente, 5000);
-    setInterval(loadUserOrders, 1000);
-    setInterval(checkEtatCommandes, 1000);
+    setInterval(updateBeverages, 10000);
+    setInterval(updateTempsAttente, 10000);
+    setInterval(loadUserOrders, 5000);
+    setInterval(checkEtatCommandes, 5000);
+
     updateTempsAttente();
     updateBeverages();
 </script>
